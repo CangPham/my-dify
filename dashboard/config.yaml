@@ -1,0 +1,20 @@
+cookie:
+  expiry_days: 30
+  key: "hota-master-cs"
+  name: "x-token"
+credentials:
+  usernames:
+    admin:
+      email: admin@gmail.com
+      failed_login_attempts: 0 # Will be managed automatically
+      first_name: Admin
+      last_name: User
+      logged_in: False # Will be managed automatically
+      password: "@DifyAdmin2024" # Will be hashed automatically
+      roles: # Optional
+      - admin
+api:
+  url: "http://localhost:5001"
+  token: "89fisiqoo009"
+payment:
+  webhook_url: "https://....../dashboard/webhook/plan"

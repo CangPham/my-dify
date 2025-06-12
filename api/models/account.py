@@ -98,6 +98,16 @@ class Account(UserMixin, Base):
     last_active_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     status = db.Column(db.String(16), nullable=False, server_default=db.text("'active'::character varying"))
     initialized_at = db.Column(db.DateTime)
+
+    # Custom plan and quota fields
+    id_custom_plan = db.Column(db.String(255), nullable=True)
+    plan_expiration = db.Column(db.DateTime, nullable=True)
+    month_before_banned = db.Column(db.Integer, nullable=False, server_default=db.text("12"))
+    max_of_apps = db.Column(db.Integer, nullable=False, server_default=db.text("10"))
+    max_vector_space = db.Column(db.Integer, nullable=True)
+    max_annotation_quota_limit = db.Column(db.Integer, nullable=True)
+    max_documents_upload_quota = db.Column(db.Integer, nullable=True)
+
     created_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
     updated_at = db.Column(db.DateTime, nullable=False, server_default=func.current_timestamp())
 

@@ -90,12 +90,18 @@ from .workflow import (
     WorkflowType,
 )
 
+# Custom dashboard models
+from .alies_payments_custom import AliesPaymentsCustom
+from .payments_history_custom import PaymentsHistoryCustom
+from .system_custom_info import SystemCustomInfo
+
 __all__ = [
     "APIBasedExtension",
     "APIBasedExtensionPoint",
     "Account",
     "AccountIntegrate",
     "AccountStatus",
+    "AliesPaymentsCustom",
     "ApiRequest",
     "ApiToken",
     "ApiToolProvider",
@@ -139,6 +145,7 @@ __all__ = [
     "MessageFeedback",
     "MessageFile",
     "OperationLog",
+    "PaymentsHistoryCustom",
     "PinnedConversation",
     "Provider",
     "ProviderModel",
@@ -149,6 +156,7 @@ __all__ = [
     "RecommendedApp",
     "SavedMessage",
     "Site",
+    "SystemCustomInfo",
     "Tag",
     "TagBinding",
     "Tenant",

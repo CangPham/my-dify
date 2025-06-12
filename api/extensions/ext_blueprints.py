@@ -8,6 +8,7 @@ def init_app(app: DifyApp):
     from flask_cors import CORS  # type: ignore
 
     from controllers.console import bp as console_app_bp
+    from controllers.dashboard import bp as dashboard_bp
     from controllers.files import bp as files_bp
     from controllers.inner_api import bp as inner_api_bp
     from controllers.service_api import bp as service_api_bp
@@ -46,3 +47,13 @@ def init_app(app: DifyApp):
     app.register_blueprint(files_bp)
 
     app.register_blueprint(inner_api_bp)
+
+    # Dashboard API with CORS
+    CORS(
+        dashboard_bp,
+        resources={r"/*": {"origins": "*"}},
+        supports_credentials=False,
+        allow_headers=["Content-Type", "api-token"],
+        methods=["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+    )
+    app.register_blueprint(dashboard_bp)

@@ -508,7 +508,8 @@ x-shared-env: &shared-api-worker-env
 services:
   # API service
   api:
-    image: langgenius/dify-api:1.4.1
+    # image: langgenius/dify-api:0.7.2
+    image: custom-dify/api
     restart: always
     environment:
       # Use the shared environment variables.
@@ -528,16 +529,24 @@ services:
       redis:
         condition: service_started
     volumes:
+      # - ../api:/app/api # Development mode
+      # - ../api/docker/entrypoint.sh:/app/api/entrypoint.sh # Development mode
+      # - api_venv:/app/api/.venv
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
+      # - ../api/migrations/versions:/app/api/migrations/versions # Development mode
     networks:
       - ssrf_proxy_network
       - default
+    build:
+      context: ../api
+      dockerfile: Dockerfile
 
   # worker service
   # The Celery worker for processing the queue.
   worker:
-    image: langgenius/dify-api:1.4.1
+    # image: langgenius/dify-api:0.7.2
+    image: custom-dify/api
     restart: always
     environment:
       # Use the shared environment variables.
@@ -555,15 +564,40 @@ services:
       redis:
         condition: service_started
     volumes:
+      # - ../api:/app/api # Development mode
+      # - ../api/docker/entrypoint.sh:/app/api/entrypoint.sh # Development mode
+      # - api_venv:/app/api/.venv
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
+      # - ../api/migrations/versions:/app/api/migrations/versions # Development mode
     networks:
       - ssrf_proxy_network
       - default
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+
+  # Custom dashboard service
+  dashboard:
+    image: custom-dify/dashboard
+    restart: always
+    environment:
+      API_URL: "http://api:5001"
+    ports:
+      - "8501:8501"
+    networks:
+      - ssrf_proxy_network
+      - default
+    # volumes:
+    #   - ../dashboard:/app/dashboard # Development mode
+    build:
+      context: ../dashboard
+      dockerfile: Dockerfile
 
   # Frontend web application.
   web:
-    image: langgenius/dify-web:1.4.1
+    # image: langgenius/dify-web:0.7.2
+    image: custom-dify/web
     restart: always
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
@@ -585,6 +619,12 @@ services:
       ENABLE_WEBSITE_JINAREADER: ${ENABLE_WEBSITE_JINAREADER:-true}
       ENABLE_WEBSITE_FIRECRAWL: ${ENABLE_WEBSITE_FIRECRAWL:-true}
       ENABLE_WEBSITE_WATERCRAWL: ${ENABLE_WEBSITE_WATERCRAWL:-true}
+    build:
+      context: ../web
+      dockerfile: Dockerfile
+    # volumes:
+    #   - ../web/app:/app/web/app # Development mode
+
   # The postgres database.
   db:
     image: postgres:15-alpine
@@ -701,6 +741,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      api: # cần coi lại
+        condition: service_healthy
+      worker:
+        condition: service_healthy
 
   # ssrf_proxy server
   # for more information, please refer to
@@ -782,6 +826,11 @@ services:
     ports:
       - '${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}'
       - '${EXPOSE_NGINX_SSL_PORT:-443}:${NGINX_SSL_PORT:-443}'
+      - '5001:5001'
+      - '8501:8501'
+    networks:
+      - ssrf_proxy_network
+      - default
 
   # The Weaviate vector store.
   weaviate:
@@ -1203,3 +1252,4 @@ networks:
 volumes:
   oradata:
   dify_es01_data:
+  api_venv:

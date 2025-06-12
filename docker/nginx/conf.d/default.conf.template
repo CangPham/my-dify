@@ -46,3 +46,28 @@ server {
     # placeholder for https config defined in https.conf.template
     ${HTTPS_CONFIG}
 }
+
+server {
+    listen 5001;
+    server_name ${NGINX_SERVER_NAME};
+
+    location /dashboard {
+      proxy_pass http://api:5001;
+      include proxy.conf;
+    }
+}
+
+server {
+    listen 8501;
+    server_name ${NGINX_SERVER_NAME};
+
+    location / {
+      proxy_pass http://dashboard:8501;
+      include proxy.conf;
+    }
+
+    location /_stcore/stream {
+      proxy_pass http://dashboard:8501/_stcore/stream;
+      include proxy.conf;
+    }
+}
